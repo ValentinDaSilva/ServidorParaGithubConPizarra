@@ -3695,7 +3695,9 @@ document.addEventListener("keydown", function(e) {
     }
   }else if(e.key == "F2" || e.code == "F2"){
     e.preventDefault();
-    toggleMenuUsuarios();
+    if (typeof window.toggleMenuUsuarios === 'function') {
+      window.toggleMenuUsuarios();
+    }
   }else if(e.key == "Escape" &&  document.getElementById('formulario-funcion').style.display == 'block'){
      document.getElementById('cancelar-funcion-btn').click();
   }else if(e.key == "Escape" && document.getElementById("modal-atajos").style.display == "flex"){
@@ -4259,7 +4261,11 @@ document.addEventListener("keydown", function(e) {
         // Inicializar event listeners si no se han inicializado aún
         const minimizarBtn = document.getElementById('minimizar-usuarios-btn');
         if (minimizarBtn && !minimizarBtn.hasAttribute('data-listener-added')) {
-          minimizarBtn.addEventListener('click', toggleMenuUsuarios);
+          minimizarBtn.addEventListener('click', () => {
+            if (typeof window.toggleMenuUsuarios === 'function') {
+              window.toggleMenuUsuarios();
+            }
+          });
           minimizarBtn.setAttribute('data-listener-added', 'true');
         }
 
@@ -4726,7 +4732,13 @@ document.addEventListener("keydown", function(e) {
       });
 
       socket.on('usuarios-actualizados', (usuarios) => {
-        actualizarListaUsuarios(usuarios);
+        if (typeof window.actualizarListaUsuarios === 'function') {
+          window.actualizarListaUsuarios(usuarios);
+        } else if (typeof actualizarListaUsuarios === 'function') {
+          actualizarListaUsuarios(usuarios);
+        } else {
+          console.warn('usuarios-actualizados recibido pero actualizarListaUsuarios no está definida');
+        }
       });
 
       socket.on('colaboracion-desactivada-global', () => {
