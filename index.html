@@ -1232,6 +1232,7 @@
 </div>
 <script src="/URLS.js"></script>
   <script>
+    console.log("Probando nueva implementacion: ", URLS);
     // Variables globales Socket.io
     let socket = null;
     let miUsuario = null;
@@ -2355,7 +2356,10 @@ function obtenerPlantillaActual() {
         return;
       }
 
-      editorInstance = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      const _editorTextarea = document.getElementById("editor");
+      if (_editorTextarea) {
+        try {
+          editorInstance = CodeMirror.fromTextArea(_editorTextarea, {
         mode: "text/x-c++src",
         theme: "material",
         lineNumbers: true,
@@ -2420,7 +2424,13 @@ function obtenerPlantillaActual() {
         hintOptions: {
           hint: cppHint
         }
-      });
+          });
+        } catch (err) {
+          console.error('Error inicializando CodeMirror (editorInstance):', err);
+        }
+      } else {
+        console.warn('Textarea with id "editor" not found — skipping CodeMirror initialization (editorInstance)');
+      }
 
 
       // Personalizamos el resaltado de ocurrencias para palabras completas
@@ -4046,6 +4056,9 @@ document.addEventListener("keydown", function(e) {
       intentarConectar(urlsToTry, 0, correoUsuario);
     }
 
+    // Exponer la función al ámbito global por si algún elemento inline la llama
+    try { window.conectarUsuario = conectarUsuario; } catch(e) {}
+
     function intentarConectar(urls, index, correoUsuario) {
       if (index >= urls.length) {
         console.error('❌ No se pudo conectar a ningún servidor después de intentar todas las URLs');
@@ -5429,7 +5442,9 @@ document.addEventListener("keydown", function(e) {
         };
       }
 
-      const editor = CodeMirror.fromTextArea(textarea, {
+      if (typeof textarea !== 'undefined' && textarea) {
+        try {
+          const editor = CodeMirror.fromTextArea(textarea, {
         mode: "text/x-c++src",
         theme: "material",
         lineNumbers: true,
@@ -5474,7 +5489,14 @@ document.addEventListener("keydown", function(e) {
           }
         },
         hintOptions: { hint: cppHint }
-      });
+        });
+          });
+        } catch (err) {
+          console.error('Error inicializando CodeMirror (pestaña):', err);
+        }
+      } else {
+        console.warn('Textarea variable `textarea` is null or undefined — skipping this CodeMirror instance');
+      }
 
       // Asegurarse de que el editor tenga altura
       const container = textarea.parentElement;
@@ -6648,6 +6670,8 @@ document.addEventListener("keydown", function(e) {
         }
       }
     });
+  }
+}
   </script>
   <script>
 
