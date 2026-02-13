@@ -4303,11 +4303,49 @@ document.addEventListener("keydown", function(e) {
           }
         }
 
-        // Inicializar arrastre del menú cuando se muestra
-        inicializarArrastreMenu();
+        // Inicializar arrastre del menú cuando se muestra (protegido para evitar ReferenceError si no está definida aún)
+        if (typeof window.inicializarArrastreMenu === 'function') {
+          try { window.inicializarArrastreMenu(); } catch(e) { console.error(e); }
+        } else if (typeof inicializarArrastreMenu === 'function') {
+          try { inicializarArrastreMenu(); } catch(e) { console.error(e); }
+        } else {
+          let _intentosInitMenu = 0;
+          const _intervalInitMenu = setInterval(() => {
+            _intentosInitMenu++;
+            if (typeof window.inicializarArrastreMenu === 'function') {
+              try { window.inicializarArrastreMenu(); } catch(e) { console.error(e); }
+              clearInterval(_intervalInitMenu);
+            } else if (typeof inicializarArrastreMenu === 'function') {
+              try { inicializarArrastreMenu(); } catch(e) { console.error(e); }
+              clearInterval(_intervalInitMenu);
+            } else if (_intentosInitMenu > 50) { // ~10s
+              console.warn('No se pudo inicializar arrastre del menú en 10s');
+              clearInterval(_intervalInitMenu);
+            }
+          }, 200);
+        }
 
-        // Inicializar sistema de pestañas
-        inicializarSistemaPestañas();
+        // Inicializar sistema de pestañas (protegido)
+        if (typeof window.inicializarSistemaPestañas === 'function') {
+          try { window.inicializarSistemaPestañas(); } catch(e) { console.error(e); }
+        } else if (typeof inicializarSistemaPestañas === 'function') {
+          try { inicializarSistemaPestañas(); } catch(e) { console.error(e); }
+        } else {
+          let _intentosInitPest = 0;
+          const _intervalInitPest = setInterval(() => {
+            _intentosInitPest++;
+            if (typeof window.inicializarSistemaPestañas === 'function') {
+              try { window.inicializarSistemaPestañas(); } catch(e) { console.error(e); }
+              clearInterval(_intervalInitPest);
+            } else if (typeof inicializarSistemaPestañas === 'function') {
+              try { inicializarSistemaPestañas(); } catch(e) { console.error(e); }
+              clearInterval(_intervalInitPest);
+            } else if (_intentosInitPest > 50) {
+              console.warn('No se pudo inicializar el sistema de pestañas en 10s');
+              clearInterval(_intervalInitPest);
+            }
+          }, 200);
+        }
 
         // Cargar documentos disponibles
         if (data.documentos && data.documentos.length > 0) {
